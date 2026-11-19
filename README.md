@@ -6,6 +6,8 @@ A free Chrome extension for Durham College students. Open your MyCampus **Accoun
 
 > Unofficial. Not affiliated with or endorsed by Durham College. Numbers are estimates; the fees on your account are always the correct ones.
 
+> **Hello, student.** I had this exact problem too. I may not need this any more, but I'm pretty sure you do, and I hope you'll carry it forward and keep maintaining it. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ![The panel on the Account Summary page (demo numbers)](docs/screenshot.png)
 
 ## Install (2 minutes, Chrome / Edge / Brave)

@@ -5,84 +5,226 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DC Fee Helper: your Durham College fees next to your balance</title>
 <meta name="description" content="Free, open-source Chrome extension for Durham College students. See your semester fees and what's left to pay, right on your MyCampus Account Summary.">
-<meta property="og:title" content="DC Fee Helper">
-<meta property="og:description" content="Know what you owe before you register. Free, open source, private.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="DC Fee Helper: know what you owe before you register">
+<meta property="og:description" content="Your Durham College semester fees and account balance, side by side. Free, open source, private.">
 <meta property="og:image" content="https://pouyashahrdami.github.io/dc-fee-helper/poster.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="logo.png">
 <style>
-:root{--brand:#00573f;--accent:#0a7a58;--tint:#eaf6f1;--ink:#17261f;--muted:#5a6d64}
+:root{--ink:#0e1a15;--ink2:#3d4f46;--mute:#6b7d75;--line:#e3ebe7;--bg:#fafcfb;--brand:#00573f;--accent:#0a7a58;--mint:#8fe6c3;--dark:#07130f}
 *{box-sizing:border-box}
-body{margin:0;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:var(--ink);background:#fff}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
 a{color:var(--brand)}
-.hero{background:radial-gradient(900px 500px at 85% 0%,#12936a 0%,transparent 60%),linear-gradient(135deg,#003d2c,var(--brand) 55%,var(--accent));color:#fff;padding:64px 24px 72px}
-.wrap{max-width:1000px;margin:0 auto}
-.brand{display:flex;align-items:center;gap:12px;font-weight:600;margin-bottom:40px}
-.brand img{width:40px;height:40px;border-radius:10px}
-h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-1.2px;margin:0 0 18px;max-width:720px}
-h1 em{font-style:normal;color:#8fe6c3}
-.hero p{font-size:20px;color:#d3efe3;max-width:620px;margin:0 0 30px}
-.btn{display:inline-block;padding:14px 24px;border-radius:10px;font-weight:600;text-decoration:none;margin:0 10px 10px 0}
-.btn.p{background:#fff;color:var(--brand)}
-.btn.s{border:1px solid rgba(255,255,255,.45);color:#fff}
-section{padding:56px 24px}
-h2{font-size:30px;letter-spacing:-.5px;margin:0 0 20px}
-.shot{width:100%;border-radius:14px;box-shadow:0 12px 40px rgba(0,40,28,.2);border:1px solid #e1e9e5}
-.cap{color:var(--muted);font-size:14px;margin-top:10px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
-.card{background:var(--tint);border-radius:14px;padding:22px}
-.card h3{margin:0 0 6px;font-size:18px;color:var(--brand)}
-.card p{margin:0;color:#35493f;font-size:15.5px}
-ol{padding-left:22px}li{margin-bottom:8px}
-code{background:#eef3f0;padding:2px 7px;border-radius:6px;font-size:.92em}
-.alt{background:#f6f9f7}
-footer{padding:36px 24px;color:var(--muted);font-size:14px;text-align:center}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(7,19,15,.82);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
+nav .wrap{display:flex;align-items:center;height:64px;gap:28px}
+.logo{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:650;letter-spacing:-.2px}
+.logo img{width:30px;height:30px;border-radius:8px}
+nav .links{display:flex;gap:26px;margin-left:auto}
+nav .links a{color:#b7d3c6;text-decoration:none;font-size:15px;font-weight:500}
+nav .links a:hover{color:#fff}
+.gh{margin-left:4px;padding:8px 16px;border-radius:9px;background:#fff;color:var(--brand)!important;font-weight:650!important;font-size:14.5px!important}
+/* hero */
+.hero{position:relative;background:var(--dark);color:#fff;overflow:hidden;padding:84px 0 110px}
+.hero:before{content:"";position:absolute;inset:0;background:
+ radial-gradient(700px 420px at 78% 8%,rgba(18,147,106,.55),transparent 65%),
+ radial-gradient(500px 360px at 8% 100%,rgba(10,122,88,.35),transparent 70%);}
+.hero:after{content:"";position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at 50% 30%,#000 20%,transparent 75%)}
+.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr 1fr;gap:56px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(143,230,195,.35);border-radius:999px;color:var(--mint);font-size:13.5px;font-weight:600;letter-spacing:.2px;background:rgba(143,230,195,.08)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--mint)}
+h1{font-size:clamp(40px,5.6vw,66px);line-height:1.02;letter-spacing:-2px;margin:22px 0 20px;font-weight:750}
+h1 em{font-style:normal;background:linear-gradient(100deg,var(--mint),#d4fbe9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:20px;color:#bcd9cc;max-width:520px;margin:0 0 34px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:26px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border-radius:11px;font-weight:650;text-decoration:none;font-size:16px;transition:transform .15s,box-shadow .15s,background .15s}
+.btn.p{background:#fff;color:var(--brand);box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.btn.p:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.btn.s{color:#fff;border:1px solid rgba(255,255,255,.28)}
+.btn.s:hover{background:rgba(255,255,255,.08)}
+.trust{display:flex;flex-wrap:wrap;gap:8px 22px;color:#98bcab;font-size:14.5px}
+.trust span:before{content:"✓";color:var(--mint);margin-right:7px;font-weight:700}
+/* browser frame */
+.frame{background:#101e18;border-radius:14px;border:1px solid rgba(255,255,255,.12);box-shadow:0 40px 80px -20px rgba(0,0,0,.65),0 0 0 1px rgba(0,0,0,.3);overflow:hidden;transform:perspective(1600px) rotateY(-5deg) rotateX(2deg);transition:transform .5s}
+.frame:hover{transform:none}
+.bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#16261f;border-bottom:1px solid rgba(255,255,255,.07)}
+.bar b{width:11px;height:11px;border-radius:50%;background:#2c4238}
+.bar span{margin-left:12px;flex:1;padding:4px 12px;border-radius:7px;background:#0d1914;color:#7fa291;font-size:12.5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.frame img{display:block;width:100%}
+/* sections */
+section{padding:96px 0}
+.eyebrow{color:var(--accent);font-weight:700;font-size:13.5px;letter-spacing:1.4px;text-transform:uppercase;margin-bottom:12px}
+h2{font-size:clamp(30px,4vw,44px);line-height:1.1;letter-spacing:-1.2px;margin:0 0 16px;font-weight:720;max-width:700px}
+.sub{color:var(--ink2);font-size:19px;max-width:620px;margin:0 0 52px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden}
+.step{padding:34px 30px;border-right:1px solid var(--line)}
+.step:last-child{border:0}
+.num{font-size:14px;font-weight:700;color:var(--accent);letter-spacing:1px}
+.step h3{margin:10px 0 8px;font-size:21px;letter-spacing:-.4px}
+.step p{margin:0;color:var(--ink2);font-size:16px}
+.feats{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.feat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:32px;transition:border-color .2s,box-shadow .2s}
+.feat:hover{border-color:#bfd8cd;box-shadow:0 12px 32px -12px rgba(0,60,40,.18)}
+.ico{width:46px;height:46px;border-radius:12px;background:#eaf6f1;display:grid;place-items:center;margin-bottom:18px}
+.ico svg{width:23px;height:23px;stroke:var(--brand);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.feat h3{margin:0 0 8px;font-size:20px;letter-spacing:-.3px}
+.feat p{margin:0;color:var(--ink2);font-size:16px}
+/* privacy */
+.priv{background:var(--dark);color:#fff;border-radius:26px;padding:64px;position:relative;overflow:hidden}
+.priv:before{content:"";position:absolute;inset:0;background:radial-gradient(520px 300px at 90% 0%,rgba(18,147,106,.4),transparent 70%)}
+.priv>*{position:relative}
+.priv h2{color:#fff}.priv .sub{color:#b4d1c4;margin-bottom:40px}.priv .eyebrow{color:var(--mint)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fact{border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:24px;background:rgba(255,255,255,.04)}
+.fact small{display:block;color:var(--mint);font-weight:700;letter-spacing:1.2px;font-size:12px;text-transform:uppercase;margin-bottom:8px}
+.fact p{margin:0;color:#d7ebe2;font-size:16px}
+/* install */
+.install{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+ol.big{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.big li{counter-increment:s;display:flex;gap:18px;padding:0 0 26px;position:relative}
+ol.big li:before{content:counter(s);flex:none;width:38px;height:38px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;font-size:16px}
+ol.big li:not(:last-child):after{content:"";position:absolute;left:18px;top:42px;bottom:2px;width:2px;background:var(--line)}
+ol.big b{display:block;font-size:18px;letter-spacing:-.2px;margin-bottom:2px}
+ol.big span{color:var(--ink2);font-size:16px}
+code{background:#eaf1ed;padding:2px 8px;border-radius:6px;font:.9em ui-monospace,SFMono-Regular,Menlo,monospace}
+.note{background:#fff;border:1px solid var(--line);border-radius:18px;padding:30px}
+.note h3{margin:0 0 8px;font-size:19px}.note p{margin:0 0 14px;color:var(--ink2);font-size:16px}
+.maker{max-width:760px;margin:0 auto;text-align:center}
+.maker blockquote{margin:0;font-size:clamp(22px,2.8vw,29px);line-height:1.4;letter-spacing:-.5px;font-weight:600;color:var(--ink)}
+.maker blockquote span{color:var(--accent)}
+.maker p{color:var(--ink2);font-size:18px;margin:22px auto 0;max-width:640px}
+.maker .by{margin-top:26px;font-size:15px;color:var(--mute);font-weight:600}
+/* faq */
+.faq{max-width:780px}
+details{border-bottom:1px solid var(--line);padding:20px 0}
+summary{cursor:pointer;font-weight:650;font-size:18px;letter-spacing:-.2px;list-style:none;display:flex;justify-content:space-between;gap:20px}
+summary::-webkit-details-marker{display:none}
+summary:after{content:"+";color:var(--accent);font-size:24px;line-height:1;font-weight:400}
+details[open] summary:after{content:"–"}
+details p{margin:12px 0 0;color:var(--ink2);font-size:16.5px}
+/* cta + footer */
+.final{text-align:center;padding:100px 0 110px;background:linear-gradient(180deg,var(--bg),#eaf6f1)}
+.final h2{margin:0 auto 14px}.final .sub{margin:0 auto 32px}
+.final .btn.p{background:var(--brand);color:#fff;box-shadow:0 10px 28px rgba(0,87,63,.3)}
+footer{padding:36px 0;color:var(--mute);font-size:14.5px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer a{color:var(--mute)}
+@media (max-width:900px){
+ .hero .wrap,.install{grid-template-columns:1fr}.frame{transform:none}
+ .steps,.feats,.facts{grid-template-columns:1fr}.step{border-right:0;border-bottom:1px solid var(--line)}
+ .priv{padding:40px 26px}nav .links a:not(.gh){display:none}.hero{padding-top:56px}section{padding:70px 0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<header class="hero"><div class="wrap">
-  <div class="brand"><img src="logo.png" alt="">DC Fee Helper</div>
-  <h1>Know what you owe <em>before</em> you register.</h1>
-  <p>A free Chrome extension for Durham College students. Your semester fees and your account balance, side by side on your MyCampus Account Summary.</p>
-  <a class="btn p" href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download (free)</a>
-  <a class="btn s" href="https://github.com/pouyashahrdami/dc-fee-helper">View on GitHub</a>
+<nav><div class="wrap">
+  <a class="logo" href="#top"><img src="logo.png" alt="">DC Fee Helper</a>
+  <div class="links"><a href="#how">How it works</a><a href="#privacy">Privacy</a><a href="#install">Install</a><a href="#faq">FAQ</a>
+  <a class="gh" href="https://github.com/pouyashahrdami/dc-fee-helper">GitHub</a></div>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <span class="pill"><i></i>Free for Durham College students</span>
+    <h1>Know what you owe <em>before</em> you register.</h1>
+    <p class="lead">Your semester fees and your MyCampus balance, side by side. No more flipping between the fee estimator and your account.</p>
+    <div class="cta">
+      <a class="btn p" href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download for Chrome</a>
+      <a class="btn s" href="#how">See how it works</a>
+    </div>
+    <div class="trust"><span>Open source</span><span>No tracking</span><span>Balance stays in your browser</span></div>
+  </div>
+  <div class="frame" aria-hidden="false">
+    <div class="bar"><b></b><b></b><b></b><span>ssp.mycampus.ca/StudentSelfService/ssb/accountSummary</span></div>
+    <img src="hero.png" alt="The DC Fee Helper panel on the MyCampus Account Summary page, showing fees and what's still to pay (demo numbers)">
+  </div>
 </div></header>
 
-<section><div class="wrap">
-  <img class="shot" src="screenshot.png" alt="The DC Fee Helper panel on the Account Summary page, with demo numbers">
-  <div class="cap">The panel on the Account Summary page (demo numbers).</div>
-</div></section>
-
-<section class="alt"><div class="wrap">
-  <h2>What it does</h2>
-  <div class="grid">
-    <div class="card"><h3>Search once, remembered</h3><p>Pick your program, Domestic or International, and when your year starts. It's saved for next time.</p></div>
-    <div class="card"><h3>Credit applied for you</h3><p>See the semester fee breakdown and exactly what's still to pay after your account credit.</p></div>
-    <div class="card"><h3>One click to the source</h3><p>Open the official estimator with your selections already filled in.</p></div>
-    <div class="card"><h3>Private by design</h3><p>Your balance never leaves your browser. No accounts, no tracking, open source.</p></div>
+<section id="how"><div class="wrap">
+  <div class="eyebrow">How it works</div>
+  <h2>Three clicks from "how much?" to "I know."</h2>
+  <p class="sub">The panel appears on your Account Summary page and does the arithmetic you used to do in your head.</p>
+  <div class="steps">
+    <div class="step"><div class="num">01</div><h3>Pick your program</h3><p>Search from every Durham College program, choose Domestic or International, and when your year of study starts.</p></div>
+    <div class="step"><div class="num">02</div><h3>Choose a semester</h3><p>See the full fee breakdown: tuition, ancillary, student association, program and co-op fees.</p></div>
+    <div class="step"><div class="num">03</div><h3>See what's left to pay</h3><p>Your account credit is subtracted for you, so the number you see is the number you need.</p></div>
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <h2>Install in 2 minutes</h2>
-  <ol>
-    <li><a href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download the latest zip</a> and unzip it. Keep the folder somewhere permanent.</li>
-    <li>Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top right).</li>
-    <li>Click <strong>Load unpacked</strong> and choose the unzipped folder.</li>
-    <li>Sign in to MyCampus and open <strong>Account Summary</strong>. The panel appears on the right.</li>
-  </ol>
-  <p>Works in Chrome, Edge and Brave. Prefer to have an AI do the setup or change the colors? The <a href="https://github.com/pouyashahrdami/dc-fee-helper#install-with-an-ai-assistant">README has copy-paste prompts</a>.</p>
+<section style="padding-top:0"><div class="wrap">
+  <div class="feats">
+    <div class="feat"><div class="ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></div><h3>Search, don't scroll</h3><p>Around 200 programs, one search box. Type a few letters and jump straight to yours. Your choice is remembered next time.</p></div>
+    <div class="feat"><div class="ico"><svg viewBox="0 0 24 24"><path d="M3 7h18v10H3z"/><circle cx="12" cy="12" r="2.5"/><path d="M6 10v.01M18 14v.01"/></svg></div><h3>Credit applied automatically</h3><p>MyCampus shows money left in your account as a negative balance. The panel handles that for you and tells you plainly what's still owed.</p></div>
+    <div class="feat"><div class="ico"><svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5H5V6h5"/></svg></div><h3>Verify at the source</h3><p>One click opens the official fee estimator with your program, tuition type, term and semester already selected.</p></div>
+    <div class="feat"><div class="ico"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l-7 7 7 7" transform="rotate(180 12 12)"/><path d="M4 4h16v16H4z" opacity=".0"/></svg></div><h3>Yours to arrange</h3><p>Drag the panel anywhere, collapse it, or re-theme it. The colors live in five variables, and the README has an AI prompt for it.</p></div>
+  </div>
 </div></section>
 
-<section class="alt"><div class="wrap">
-  <h2>Good to know</h2>
-  <ul>
-    <li><strong>Unofficial.</strong> Not affiliated with or endorsed by Durham College. Numbers are estimates; the fees on your account are always correct.</li>
-    <li>Fees are full-time estimates from the college's public estimator data. Part-time loads can differ.</li>
-    <li>Numbers look wrong? <a href="https://github.com/pouyashahrdami/dc-fee-helper/issues/new/choose">Open an issue</a> (never post your real balance).</li>
-    <li><a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/PRIVACY.md">Privacy policy</a> · <a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/CONTRIBUTING.md">Contribute</a> · MIT license</li>
-  </ul>
+<section id="privacy" style="padding-top:0"><div class="wrap">
+  <div class="priv">
+    <div class="eyebrow">Privacy</div>
+    <h2>Your balance never leaves your browser.</h2>
+    <p class="sub">A tool that sits on your student account should earn trust. This one is open source, so you can read every line.</p>
+    <div class="facts">
+      <div class="fact"><small>It reads</small><p>Your account balance from the page you're already looking at, only to work out what's left to pay.</p></div>
+      <div class="fact"><small>It sends</small><p>Nothing about you. Its only request is for the college's public fee data: a program code, tuition type and term.</p></div>
+      <div class="fact"><small>It stores</small><p>Your last selections and panel position, on your own device. No accounts, no analytics, no ads.</p></div>
+    </div>
+  </div>
 </div></section>
 
-<footer>Made by a Durham College student, for Durham College students.</footer>
+<section id="install" style="padding-top:0"><div class="wrap">
+  <div class="eyebrow">Install</div>
+  <h2>Up and running in two minutes.</h2>
+  <p class="sub">Works in Chrome, and in other Chromium browsers like Edge and Brave.</p>
+  <div class="install">
+    <ol class="big">
+      <li><div><b>Download and unzip</b><span><a href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Get the latest zip</a>, unzip it, and keep the folder somewhere permanent.</span></div></li>
+      <li><div><b>Open your extensions page</b><span>Go to <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top right).</span></div></li>
+      <li><div><b>Load unpacked</b><span>Click <strong>Load unpacked</strong> and choose the unzipped folder.</span></div></li>
+      <li><div><b>Open Account Summary</b><span>Sign in to MyCampus and open your Account Summary. The panel appears on the right.</span></div></li>
+    </ol>
+    <div class="note">
+      <h3>Prefer an AI to do the setup?</h3>
+      <p>The README has a copy-paste prompt for Claude Code, Cursor and similar assistants, plus one for changing the panel's colors.</p>
+      <a class="btn s" style="color:var(--brand);border-color:#bcd6cb" href="https://github.com/pouyashahrdami/dc-fee-helper#install-with-an-ai-assistant">Open the prompts</a>
+    </div>
+  </div>
+</div></section>
+
+<section id="faq" style="padding-top:0"><div class="wrap">
+  <div class="eyebrow">FAQ</div>
+  <h2>Questions, answered.</h2>
+  <div class="faq" style="margin-top:36px">
+    <details><summary>Is this an official Durham College tool?</summary><p>No. It's an independent, student-made project, not affiliated with or endorsed by Durham College. Numbers are estimates; the fees on your account are always the correct ones.</p></details>
+    <details><summary>Is it safe to use on my student account?</summary><p>It never asks for your password and never sends your balance anywhere. It reads the balance already shown on the page and fetches public fee data. The code is open for anyone to inspect.</p></details>
+    <details><summary>Why do I have to turn on Developer mode?</summary><p>The extension isn't in the Chrome Web Store yet, so it's installed from the downloaded folder. It does exactly the same thing either way.</p></details>
+    <details><summary>Does it work for international students and co-op programs?</summary><p>Yes. Pick International in the panel, and co-op fees appear as their own line when a semester has one.</p></details>
+    <details><summary>The numbers look wrong. What now?</summary><p>Check them against the official estimator using the button in the panel. If they still differ, <a href="https://github.com/pouyashahrdami/dc-fee-helper/issues/new/choose">open an issue</a>. Please never post your real balance or student details.</p></details>
+  </div>
+</div></section>
+
+<section id="maker" style="padding-top:0"><div class="wrap"><div class="maker">
+  <div class="eyebrow">A note from the maker</div>
+  <blockquote>Hello, student. I had this exact problem too. <span>I may not need this any more, but I'm pretty sure you do.</span></blockquote>
+  <p>I built it because checking fees in one tab and my balance in another got old fast. It's open source on purpose: if the college changes something, or you want a feature, you can fix it, send a pull request, and keep it going for the next class. I hope you'll carry it forward and keep maintaining it.</p>
+  <div class="by">Pouya, Durham College student &nbsp;·&nbsp; <a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/CONTRIBUTING.md">Help maintain it</a></div>
+</div></div></section>
+
+<div class="final"><div class="wrap">
+  <h2>Stop doing fee math by hand.</h2>
+  <p class="sub">Free, private and open source. Built by a Durham College student.</p>
+  <a class="btn p" href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download for Chrome</a>
+</div></div>
+
+<footer><div class="wrap">
+  <span>Unofficial. Not affiliated with Durham College. MIT license.</span>
+  <span><a href="https://github.com/pouyashahrdami/dc-fee-helper">GitHub</a> · <a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/PRIVACY.md">Privacy policy</a> · <a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/CONTRIBUTING.md">Contribute</a></span>
+</div></footer>
 </body>
 </html>
