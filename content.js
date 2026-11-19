@@ -19,8 +19,8 @@ const LINES = [
 
 // Account Summary is an Angular SPA: wait until the balance text exists.
 function readBalance() {
-  const m = document.body.innerText.match(/Account Balance\s*(-?)\$([\d,]+\.\d\d)/);
-  return m ? (m[1] ? -1 : 1) * Number(m[2].replace(/,/g, "")) : null;
+  const m = document.body.innerText.match(/Account Balance\s*(\(?)(-?)\$(-?)([\d,]+\.\d\d)/);
+  return m ? (m[1] || m[2] || m[3] ? -1 : 1) * Number(m[4].replace(/,/g, "")) : null;
 }
 
 const CSS = `
@@ -28,7 +28,7 @@ const CSS = `
 * { box-sizing: border-box; }
 .card { position: fixed; top: 72px; right: 20px; z-index: 2147483647; width: 320px;
   font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #1c2b25;
-  background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,40,28,.22), 0 0 0 1px rgba(0,87,63,.12); overflow: hidden; }
+  background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,40,28,.22), 0 0 0 1px rgba(0,87,63,.12); max-height: calc(100vh - 16px); overflow: auto; }
 .head { display: flex; align-items: center; gap: 8px; cursor: grab; user-select: none; touch-action: none; padding: 10px 14px;
   background: linear-gradient(135deg, #00573f, #0a7a58); color: #fff; font-weight: 600; letter-spacing: .2px; }
 .head img { width: 22px; height: 22px; border-radius: 6px; }
@@ -68,12 +68,13 @@ function select(options, value, onchange) {
 
 const row = (label, value, cls = "") => el("div", { className: "line " + cls }, el("span", { textContent: label }), el("span", { textContent: value }));
 
-async function mount(balance) {
+async function mount(initial) {
+  let balance = initial;
   const state = await chrome.storage.local.get({ program: "", residence: "domestic", start: "fall", sem: "", min: false, x: null, y: null });
-  const host = el("div");
+  const host = el("div", { id: "dc-fee-helper" });
   const root = host.attachShadow({ mode: "open" });
   const card = el("div", { className: "card" });
-  const collapse = el("button", { title: "Collapse", onclick: () => { state.min = !state.min; collapse.textContent = state.min ? "+" : "–"; card.classList.toggle("min", state.min); chrome.storage.local.set({ min: state.min }); } });
+  const collapse = el("button", { title: "Collapse", onclick: () => { state.min = !state.min; collapse.textContent = state.min ? "+" : "–"; card.classList.toggle("min", state.min); reclamp(); chrome.storage.local.set({ min: state.min }); } });
   const controls = el("div");
   const result = el("div");
   card.classList.toggle("min", state.min);
@@ -90,30 +91,41 @@ async function mount(balance) {
   // Drag by the header; keep the card inside the viewport and remember where it was left.
   const place = (x, y) => {
     state.x = Math.min(Math.max(0, x), window.innerWidth - card.offsetWidth);
-    state.y = Math.min(Math.max(0, y), window.innerHeight - head.offsetHeight);
+    state.y = Math.min(Math.max(0, y), window.innerHeight - card.offsetHeight);
     Object.assign(card.style, { left: state.x + "px", top: state.y + "px", right: "auto" });
   };
   if (state.x !== null) place(state.x, state.y);
+  const reclamp = () => state.x !== null && place(state.x, state.y);
+  window.addEventListener("resize", reclamp);
   head.addEventListener("pointerdown", (e) => {
-    if (e.target === collapse) return;
+    if (e.target === collapse || e.button !== 0) return;
     const dx = e.clientX - card.offsetLeft, dy = e.clientY - card.offsetTop;
     head.setPointerCapture(e.pointerId);
     head.style.cursor = "grabbing";
     const move = (m) => place(m.clientX - dx, m.clientY - dy);
     const up = () => {
       head.removeEventListener("pointermove", move);
-      head.removeEventListener("pointerup", up);
+      head.removeEventListener("lostpointercapture", up);
       head.style.cursor = "";
       chrome.storage.local.set({ x: state.x, y: state.y });
     };
     head.addEventListener("pointermove", move);
-    head.addEventListener("pointerup", up);
+    head.addEventListener("lostpointercapture", up);
   });
 
-  const programs = Object.entries(await api("programs")).sort((a, b) => a[1].localeCompare(b[1]));
+  let programs;
+  try {
+    programs = Object.entries(await api("programs")).sort((a, b) => a[1].localeCompare(b[1]));
+  } catch (e) {
+    result.append(el("div", { className: "msg", textContent: "Could not load programs: " + e.message + ". Refresh the page to retry." }));
+    return;
+  }
+  if (!programs.some(([c]) => c.toLowerCase() === state.program)) state.program = "";
   const save = () => { chrome.storage.local.set(state); render(); };
 
+  let renderId = 0;
   async function render() {
+    const my = ++renderId;
     controls.replaceChildren(
       select([["", "Pick your program…"], ...programs.map(([c, n]) => [c.toLowerCase(), n])], state.program, (v) => { state.program = v; state.sem = ""; save(); }),
       el("div", { className: "row" },
@@ -127,9 +139,11 @@ async function mount(balance) {
     try {
       years = await api(`program/${state.program}/${state.start}/${state.residence}`);
     } catch (e) {
+      if (my !== renderId) return;
       result.append(el("div", { className: "msg", textContent: "Could not load fees: " + e.message }));
       return;
     }
+    if (my !== renderId) return; // a newer render started while we were fetching
     const sems = Object.values(years).flat().sort((a, b) => a.SEMESTER - b.SEMESTER);
     if (!sems.length) { result.append(el("div", { className: "msg", textContent: "No fees for that combination." })); return; }
     if (!sems.some((s) => s.SEMESTER === state.sem)) state.sem = sems[0].SEMESTER;
@@ -149,11 +163,20 @@ async function mount(balance) {
     );
   }
   render();
+  return (b) => { if (b !== balance) { balance = b; render(); } };
 }
 
-const timer = setInterval(() => {
-  const balance = readBalance();
-  if (balance === null) return;
-  clearInterval(timer);
-  mount(balance).catch((e) => console.error("DC Fee Helper:", e));
-}, 500);
+// The SPA can repaint the balance (placeholder first, new value after a payment), so keep reading it.
+let update = null, lastRead = null, mounting = false;
+setInterval(() => {
+  const onSummary = location.href.includes("accountSummary");
+  document.getElementById("dc-fee-helper")?.style.setProperty("display", onSummary ? "" : "none");
+  if (!onSummary) return;
+  const b = readBalance();
+  if (b === null) return;
+  if (update) return update(b);
+  if (b !== lastRead) { lastRead = b; return; } // wait for two equal reads so a placeholder $0.00 isn't used
+  if (mounting) return;
+  mounting = true;
+  mount(b).then((u) => { update = u; }).catch((e) => { mounting = false; console.error("DC Fee Helper:", e); });
+}, 1000);
