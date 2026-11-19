@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "DC Fee Helper",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Shows your Durham College semester fee estimate next to your account balance.",
   "permissions": [
     "storage"
@@ -41,7 +41,9 @@
       ],
       "matches": [
         "https://ssp.mycampus.ca/*"
-      ]
+      ],
+      "use_dynamic_url": true
     }
-  ]
+  ],
+  "homepage_url": "https://github.com/pouyashahrdami/dc-fee-helper"
 }
