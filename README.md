@@ -45,6 +45,10 @@ Your choices are saved for next time. Drag the panel by its green header; use th
 node tests/sweep.mjs     # checks the fee API for every program/term/tuition combination
 ```
 
+## Contributing
+
+Issues and pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Please never post your real balance or student details.
+
 ## License
 
 MIT
