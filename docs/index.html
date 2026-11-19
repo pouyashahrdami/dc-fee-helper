@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DC Fee Helper: your Durham College fees next to your balance</title>
+<meta name="description" content="Free, open-source Chrome extension for Durham College students. See your semester fees and what's left to pay, right on your MyCampus Account Summary.">
+<meta property="og:title" content="DC Fee Helper">
+<meta property="og:description" content="Know what you owe before you register. Free, open source, private.">
+<meta property="og:image" content="https://pouyashahrdami.github.io/dc-fee-helper/poster.png">
+<link rel="icon" href="logo.png">
+<style>
+:root{--brand:#00573f;--accent:#0a7a58;--tint:#eaf6f1;--ink:#17261f;--muted:#5a6d64}
+*{box-sizing:border-box}
+body{margin:0;font:17px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;color:var(--ink);background:#fff}
+a{color:var(--brand)}
+.hero{background:radial-gradient(900px 500px at 85% 0%,#12936a 0%,transparent 60%),linear-gradient(135deg,#003d2c,var(--brand) 55%,var(--accent));color:#fff;padding:64px 24px 72px}
+.wrap{max-width:1000px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:12px;font-weight:600;margin-bottom:40px}
+.brand img{width:40px;height:40px;border-radius:10px}
+h1{font-size:clamp(34px,6vw,58px);line-height:1.05;letter-spacing:-1.2px;margin:0 0 18px;max-width:720px}
+h1 em{font-style:normal;color:#8fe6c3}
+.hero p{font-size:20px;color:#d3efe3;max-width:620px;margin:0 0 30px}
+.btn{display:inline-block;padding:14px 24px;border-radius:10px;font-weight:600;text-decoration:none;margin:0 10px 10px 0}
+.btn.p{background:#fff;color:var(--brand)}
+.btn.s{border:1px solid rgba(255,255,255,.45);color:#fff}
+section{padding:56px 24px}
+h2{font-size:30px;letter-spacing:-.5px;margin:0 0 20px}
+.shot{width:100%;border-radius:14px;box-shadow:0 12px 40px rgba(0,40,28,.2);border:1px solid #e1e9e5}
+.cap{color:var(--muted);font-size:14px;margin-top:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.card{background:var(--tint);border-radius:14px;padding:22px}
+.card h3{margin:0 0 6px;font-size:18px;color:var(--brand)}
+.card p{margin:0;color:#35493f;font-size:15.5px}
+ol{padding-left:22px}li{margin-bottom:8px}
+code{background:#eef3f0;padding:2px 7px;border-radius:6px;font-size:.92em}
+.alt{background:#f6f9f7}
+footer{padding:36px 24px;color:var(--muted);font-size:14px;text-align:center}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <div class="brand"><img src="logo.png" alt="">DC Fee Helper</div>
+  <h1>Know what you owe <em>before</em> you register.</h1>
+  <p>A free Chrome extension for Durham College students. Your semester fees and your account balance, side by side on your MyCampus Account Summary.</p>
+  <a class="btn p" href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download (free)</a>
+  <a class="btn s" href="https://github.com/pouyashahrdami/dc-fee-helper">View on GitHub</a>
+</div></header>
+
+<section><div class="wrap">
+  <img class="shot" src="screenshot.png" alt="The DC Fee Helper panel on the Account Summary page, with demo numbers">
+  <div class="cap">The panel on the Account Summary page (demo numbers).</div>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <h2>What it does</h2>
+  <div class="grid">
+    <div class="card"><h3>Search once, remembered</h3><p>Pick your program, Domestic or International, and when your year starts. It's saved for next time.</p></div>
+    <div class="card"><h3>Credit applied for you</h3><p>See the semester fee breakdown and exactly what's still to pay after your account credit.</p></div>
+    <div class="card"><h3>One click to the source</h3><p>Open the official estimator with your selections already filled in.</p></div>
+    <div class="card"><h3>Private by design</h3><p>Your balance never leaves your browser. No accounts, no tracking, open source.</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <h2>Install in 2 minutes</h2>
+  <ol>
+    <li><a href="https://github.com/pouyashahrdami/dc-fee-helper/releases/latest">Download the latest zip</a> and unzip it. Keep the folder somewhere permanent.</li>
+    <li>Open <code>chrome://extensions</code> and turn on <strong>Developer mode</strong> (top right).</li>
+    <li>Click <strong>Load unpacked</strong> and choose the unzipped folder.</li>
+    <li>Sign in to MyCampus and open <strong>Account Summary</strong>. The panel appears on the right.</li>
+  </ol>
+  <p>Works in Chrome, Edge and Brave. Prefer to have an AI do the setup or change the colors? The <a href="https://github.com/pouyashahrdami/dc-fee-helper#install-with-an-ai-assistant">README has copy-paste prompts</a>.</p>
+</div></section>
+
+<section class="alt"><div class="wrap">
+  <h2>Good to know</h2>
+  <ul>
+    <li><strong>Unofficial.</strong> Not affiliated with or endorsed by Durham College. Numbers are estimates; the fees on your account are always correct.</li>
+    <li>Fees are full-time estimates from the college's public estimator data. Part-time loads can differ.</li>
+    <li>Numbers look wrong? <a href="https://github.com/pouyashahrdami/dc-fee-helper/issues/new/choose">Open an issue</a> (never post your real balance).</li>
+    <li><a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/PRIVACY.md">Privacy policy</a> · <a href="https://github.com/pouyashahrdami/dc-fee-helper/blob/main/CONTRIBUTING.md">Contribute</a> · MIT license</li>
+  </ul>
+</div></section>
+
+<footer>Made by a Durham College student, for Durham College students.</footer>
+</body>
+</html>
