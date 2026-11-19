@@ -26,11 +26,13 @@ function readBalance() {
 const CSS = `
 :host { all: initial; }
 * { box-sizing: border-box; }
-.card { position: fixed; top: 72px; right: 20px; z-index: 2147483647; width: 320px;
+/* THEME: change these colors to re-theme the whole panel */
+.card { --brand: #00573f; --accent: #0a7a58; --tint: #eaf6f1; --track: #eef3f0; --track-hover: #e0ebe5;
+  position: fixed; top: 72px; right: 20px; z-index: 2147483647; width: 320px;
   font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #1c2b25;
   background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,40,28,.22), 0 0 0 1px rgba(0,87,63,.12); max-height: calc(100vh - 16px); overflow: auto; }
 .head { display: flex; align-items: center; gap: 8px; cursor: grab; user-select: none; touch-action: none; padding: 10px 14px;
-  background: linear-gradient(135deg, #00573f, #0a7a58); color: #fff; font-weight: 600; letter-spacing: .2px; }
+  background: linear-gradient(135deg, var(--brand), var(--accent)); color: #fff; font-weight: 600; letter-spacing: .2px; }
 .head img { width: 22px; height: 22px; border-radius: 6px; }
 .head span { flex: 1; }
 .head button { all: unset; cursor: pointer; width: 22px; height: 22px; text-align: center; border-radius: 6px; font-size: 16px; line-height: 22px; }
@@ -39,39 +41,39 @@ const CSS = `
 .card.min .body { display: none; }
 .field { margin-bottom: 12px; }
 .label { display: block; margin: 0 0 5px 2px; color: #6b7d75; font-size: 10.5px; font-weight: 600; letter-spacing: .7px; text-transform: uppercase; }
-.seg { display: flex; padding: 3px; gap: 2px; background: #eef3f0; border-radius: 10px; }
+.seg { display: flex; padding: 3px; gap: 2px; background: var(--track); border-radius: 10px; }
 .seg button, .chips button { all: unset; box-sizing: border-box; cursor: pointer; text-align: center; color: #4d5f57; font-weight: 500;
   transition: background .12s, color .12s, box-shadow .12s; }
 .seg button { flex: 1; padding: 6px 4px; border-radius: 7px; }
-.seg button:hover:not(.on) { color: #00573f; }
-.seg button.on { background: #fff; color: #00573f; font-weight: 600; box-shadow: 0 1px 3px rgba(0,40,28,.18); }
+.seg button:hover:not(.on) { color: var(--brand); }
+.seg button.on { background: #fff; color: var(--brand); font-weight: 600; box-shadow: 0 1px 3px rgba(0,40,28,.18); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chips button { min-width: 34px; padding: 5px 10px; border-radius: 999px; background: #eef3f0; }
-.chips button:hover:not(.on) { background: #e0ebe5; color: #00573f; }
-.chips button.on { background: #00573f; color: #fff; font-weight: 600; }
-.seg button:focus-visible, .chips button:focus-visible, .opt:focus-visible { outline: 2px solid #0a7a58; outline-offset: 1px; }
+.chips button { min-width: 34px; padding: 5px 10px; border-radius: 999px; background: var(--track); }
+.chips button:hover:not(.on) { background: var(--track-hover); color: var(--brand); }
+.chips button.on { background: var(--brand); color: #fff; font-weight: 600; }
+.seg button:focus-visible, .chips button:focus-visible, .opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .hint { margin-top: 6px; color: #6b7d75; font-size: 11.5px; }
 .combo input { width: 100%; padding: 9px 12px; border: 1px solid #d5dfda; border-radius: 10px; background: #f7faf9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%236b7d75' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='M9.5 9.5L13 13'/%3E%3C/svg%3E") no-repeat 11px 50%;
   padding-left: 32px; font: inherit; color: inherit; text-overflow: ellipsis; transition: border-color .12s, box-shadow .12s; }
 .combo input::placeholder { color: #8a9a93; }
-.combo input:focus { outline: none; border-color: #0a7a58; box-shadow: 0 0 0 3px rgba(10,122,88,.15); background-color: #fff; }
+.combo input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(10,122,88,.15); background-color: #fff; }
 .list { margin-top: 6px; max-height: 190px; overflow: auto; border: 1px solid #e1e9e5; border-radius: 10px; background: #fff; padding: 4px; }
 .opt { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 7px 9px; border-radius: 7px; cursor: pointer; color: #1c2b25; }
-.opt.act { background: #eaf6f1; color: #00573f; }
-.opt mark { background: none; color: #00573f; font-weight: 700; }
+.opt.act { background: var(--tint); color: var(--brand); }
+.opt mark { background: none; color: var(--brand); font-weight: 700; }
 .empty { padding: 10px; color: #6b7d75; text-align: center; }
 .lines { margin: 4px 0 10px; border-top: 1px solid #e8eeeb; padding-top: 8px; }
 .line { display: flex; justify-content: space-between; padding: 2px 0; color: #4d5f57; }
 .line.sum { color: #1c2b25; font-weight: 600; border-top: 1px dashed #d5dfda; margin-top: 4px; padding-top: 6px; }
-.credit { color: #0a7a58; font-weight: 600; }
-.due { margin-top: 10px; padding: 12px; border-radius: 10px; background: #eaf6f1; text-align: center; }
+.credit { color: var(--accent); font-weight: 600; }
+.due { margin-top: 10px; padding: 12px; border-radius: 10px; background: var(--tint); text-align: center; }
 .due small { display: block; color: #4d5f57; text-transform: uppercase; letter-spacing: .6px; font-size: 10.5px; }
-.due strong { display: block; font-size: 26px; color: #00573f; margin-top: 2px; }
-.due.paid strong { color: #0a7a58; }
+.due strong { display: block; font-size: 26px; color: var(--brand); margin-top: 2px; }
+.due.paid strong { color: var(--accent); }
 .msg { color: #8a4b00; }
-.link { display: block; margin-top: 10px; text-align: center; color: #00573f; font-weight: 600; text-decoration: none; padding: 8px; border-radius: 8px; border: 1px solid #d5e5dd; transition: background .12s; }
+.link { display: block; margin-top: 10px; text-align: center; color: var(--brand); font-weight: 600; text-decoration: none; padding: 8px; border-radius: 8px; border: 1px solid #d5e5dd; transition: background .12s; }
 .link:hover { background: #eef6f2; }
-.link:focus-visible { outline: 2px solid #0a7a58; outline-offset: 1px; }
+.link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 .foot { padding: 0 14px 12px; color: #8a9a93; font-size: 10.5px; }
 `;
 

@@ -17,6 +17,38 @@ A free Chrome extension for Durham College students. Open your MyCampus **Accoun
 
 Update: download the new zip, replace the folder contents, then click the refresh icon on the extension card.
 
+## Install with an AI assistant
+
+Using Claude Code, Cursor, Copilot or another AI that can run commands on your computer? Paste this:
+
+```text
+Install the "DC Fee Helper" Chrome extension from https://github.com/pouyashahrdami/dc-fee-helper
+1. Download the latest release zip (dc-fee-helper-*.zip) from the Releases page into ~/Extensions/dc-fee-helper and unzip it there.
+2. Check that manifest.json is directly inside that folder.
+3. Don't change any code. Then tell me the exact folder path to choose and the steps to finish in Chrome.
+```
+
+Chrome doesn't let programs add extensions silently, so the last part is always yours: open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked** and pick that folder.
+
+## Change the colors (theme) with AI
+
+All colors live in one block at the top of the `CSS` string in `content.js`:
+
+```css
+.card { --brand: #00573f; --accent: #0a7a58; --tint: #eaf6f1; --track: #eef3f0; --track-hover: #e0ebe5; ... }
+```
+
+Give your AI the folder and a prompt like this (swap in your own colors or school-spirit idea):
+
+```text
+In content.js of this Chrome extension, re-theme the panel to navy and gold.
+Only change the five color variables at the top of the CSS block (--brand, --accent, --tint, --track, --track-hover).
+Keep text readable (good contrast) and don't touch any JavaScript logic or network code.
+Then tell me how to reload the extension.
+```
+
+After it edits the file, open `chrome://extensions`, click the refresh icon on the extension card, then reload the Account Summary page. Want the logo or layout changed too? Say so in the prompt, but keep the privacy rules in [CONTRIBUTING.md](CONTRIBUTING.md): no tracking and no extra network calls.
+
 ## How to use
 
 1. Search and pick your **program**, choose **Domestic** or **International**, and when your year of study starts (**Fall / Winter / Spring**).
