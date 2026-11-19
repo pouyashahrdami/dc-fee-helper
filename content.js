@@ -37,11 +37,29 @@ const CSS = `
 .head button:hover { background: rgba(255,255,255,.2); }
 .body { padding: 14px; }
 .card.min .body { display: none; }
-.row { display: flex; gap: 8px; margin-bottom: 8px; }
-select { flex: 1; min-width: 0; width: 100%; padding: 8px 10px; border: 1px solid #d5dfda; border-radius: 8px; background: #f7faf9;
-  font: inherit; color: inherit; margin-bottom: 8px; }
-.row select { margin-bottom: 0; }
-select:focus { outline: 2px solid #0a7a58; outline-offset: 1px; }
+.field { margin-bottom: 12px; }
+.label { display: block; margin: 0 0 5px 2px; color: #6b7d75; font-size: 10.5px; font-weight: 600; letter-spacing: .7px; text-transform: uppercase; }
+.seg { display: flex; padding: 3px; gap: 2px; background: #eef3f0; border-radius: 10px; }
+.seg button, .chips button { all: unset; box-sizing: border-box; cursor: pointer; text-align: center; color: #4d5f57; font-weight: 500;
+  transition: background .12s, color .12s, box-shadow .12s; }
+.seg button { flex: 1; padding: 6px 4px; border-radius: 7px; }
+.seg button:hover:not(.on) { color: #00573f; }
+.seg button.on { background: #fff; color: #00573f; font-weight: 600; box-shadow: 0 1px 3px rgba(0,40,28,.18); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips button { min-width: 34px; padding: 5px 10px; border-radius: 999px; background: #eef3f0; }
+.chips button:hover:not(.on) { background: #e0ebe5; color: #00573f; }
+.chips button.on { background: #00573f; color: #fff; font-weight: 600; }
+.seg button:focus-visible, .chips button:focus-visible, .opt:focus-visible { outline: 2px solid #0a7a58; outline-offset: 1px; }
+.hint { margin-top: 6px; color: #6b7d75; font-size: 11.5px; }
+.combo input { width: 100%; padding: 9px 12px; border: 1px solid #d5dfda; border-radius: 10px; background: #f7faf9 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%236b7d75' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='M9.5 9.5L13 13'/%3E%3C/svg%3E") no-repeat 11px 50%;
+  padding-left: 32px; font: inherit; color: inherit; text-overflow: ellipsis; transition: border-color .12s, box-shadow .12s; }
+.combo input::placeholder { color: #8a9a93; }
+.combo input:focus { outline: none; border-color: #0a7a58; box-shadow: 0 0 0 3px rgba(10,122,88,.15); background-color: #fff; }
+.list { margin-top: 6px; max-height: 190px; overflow: auto; border: 1px solid #e1e9e5; border-radius: 10px; background: #fff; padding: 4px; }
+.opt { all: unset; box-sizing: border-box; display: block; width: 100%; padding: 7px 9px; border-radius: 7px; cursor: pointer; color: #1c2b25; }
+.opt.act { background: #eaf6f1; color: #00573f; }
+.opt mark { background: none; color: #00573f; font-weight: 700; }
+.empty { padding: 10px; color: #6b7d75; text-align: center; }
 .lines { margin: 4px 0 10px; border-top: 1px solid #e8eeeb; padding-top: 8px; }
 .line { display: flex; justify-content: space-between; padding: 2px 0; color: #4d5f57; }
 .line.sum { color: #1c2b25; font-weight: 600; border-top: 1px dashed #d5dfda; margin-top: 4px; padding-top: 6px; }
@@ -60,11 +78,59 @@ function el(tag, props = {}, ...kids) {
   return e;
 }
 
-function select(options, value, onchange) {
-  const s = el("select", { onchange: () => onchange(s.value) });
-  for (const [v, label] of options) s.append(el("option", { value: v, textContent: label, selected: v === value }));
-  return s;
+// Button group; `cls` is "seg" (2-3 options, equal width) or "chips" (many small options).
+function choice(cls, options, value, onchange) {
+  const g = el("div", { className: cls, role: "radiogroup" });
+  for (const [v, label] of options)
+    g.append(el("button", { type: "button", role: "radio", textContent: label, className: v === value ? "on" : "", ariaChecked: String(v === value), onclick: () => onchange(v) }));
+  return g;
 }
+
+// Searchable program picker: ~200 programs are unusable in a native dropdown.
+function combobox(programs, value, onpick) {
+  const current = programs.find(([c]) => c.toLowerCase() === value)?.[1] ?? "";
+  const input = el("input", { type: "text", placeholder: "Search your program…", value: current, autocomplete: "off", spellcheck: false });
+  const list = el("div", { className: "list", hidden: true });
+  let shown = [], act = 0;
+  const hi = (name, q) => {
+    const i = q ? name.toLowerCase().indexOf(q) : -1;
+    return i < 0 ? [name] : [name.slice(0, i), el("mark", { textContent: name.slice(i, i + q.length) }), name.slice(i + q.length)];
+  };
+  const fill = (raw) => {
+    const q = raw.trim().toLowerCase();
+    shown = programs.filter(([, n]) => n.toLowerCase().includes(q))
+      .sort((a, b) => b[1].toLowerCase().startsWith(q) - a[1].toLowerCase().startsWith(q)) // prefix matches first; sort is stable
+      .slice(0, 80);
+    act = 0;
+    list.replaceChildren(...(shown.length
+      ? shown.map(([c, n], i) => {
+          const b = el("button", { type: "button", className: "opt" + (i === 0 ? " act" : ""), onmousedown: (e) => { e.preventDefault(); onpick(c.toLowerCase()); } });
+          b.append(...hi(n, q));
+          return b;
+        })
+      : [el("div", { className: "empty", textContent: "No program matches" })]));
+  };
+  const move = (d) => {
+    const opts = list.querySelectorAll(".opt");
+    if (!opts.length) return;
+    opts[act].classList.remove("act");
+    act = (act + d + opts.length) % opts.length;
+    opts[act].classList.add("act");
+    opts[act].scrollIntoView({ block: "nearest" });
+  };
+  input.addEventListener("focus", () => { input.select(); fill(""); list.hidden = false; });
+  input.addEventListener("input", () => fill(input.value));
+  input.addEventListener("blur", () => { list.hidden = true; input.value = current; });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); move(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); move(-1); }
+    else if (e.key === "Enter" && shown[act]) { e.preventDefault(); onpick(shown[act][0].toLowerCase()); }
+    else if (e.key === "Escape") input.blur();
+  });
+  return el("div", { className: "combo" }, input, list);
+}
+
+const field = (label, ...kids) => el("div", { className: "field" }, el("span", { className: "label", textContent: label }), ...kids);
 
 const row = (label, value, cls = "") => el("div", { className: "line " + cls }, el("span", { textContent: label }), el("span", { textContent: value }));
 
@@ -127,11 +193,9 @@ async function mount(initial) {
   async function render() {
     const my = ++renderId;
     controls.replaceChildren(
-      select([["", "Pick your program…"], ...programs.map(([c, n]) => [c.toLowerCase(), n])], state.program, (v) => { state.program = v; state.sem = ""; save(); }),
-      el("div", { className: "row" },
-        select([["domestic", "Domestic"], ["international", "International"]], state.residence, (v) => { state.residence = v; save(); }),
-        select([["fall", "Year starts Fall"], ["winter", "Year starts Winter"], ["spring", "Year starts Spring"]], state.start, (v) => { state.start = v; save(); })
-      )
+      field("Program", combobox(programs, state.program, (v) => { state.program = v; state.sem = ""; save(); })),
+      field("Tuition", choice("seg", [["domestic", "Domestic"], ["international", "International"]], state.residence, (v) => { state.residence = v; save(); })),
+      field("Year of study starts in", choice("seg", [["fall", "Fall"], ["winter", "Winter"], ["spring", "Spring"]], state.start, (v) => { state.start = v; save(); }))
     );
     result.replaceChildren();
     if (!state.program) return;
@@ -144,13 +208,22 @@ async function mount(initial) {
       return;
     }
     if (my !== renderId) return; // a newer render started while we were fetching
-    const sems = Object.values(years).flat().sort((a, b) => a.SEMESTER - b.SEMESTER);
-    if (!sems.length) { result.append(el("div", { className: "msg", textContent: "No fees for that combination." })); return; }
+    const sems = Object.values(years).flat(); // API order is already correct; labels can be "5i", "w", "c"
+    if (!sems.length) {
+      const others = ["fall", "winter", "spring"].filter((t) => t !== state.start);
+      const found = await Promise.all(others.map((t) => api(`program/${state.program}/${t}/${state.residence}`).then((y) => (Object.values(y).flat().length ? t : null)).catch(() => null)));
+      if (my !== renderId) return;
+      const ok = found.filter(Boolean).map((t) => t[0].toUpperCase() + t.slice(1));
+      result.append(el("div", { className: "msg", textContent: `Not offered with a ${state.start} start.` + (ok.length ? ` Try: ${ok.join(" or ")}.` : " Try the other tuition type.") }));
+      return;
+    }
     if (!sems.some((s) => s.SEMESTER === state.sem)) state.sem = sems[0].SEMESTER;
     const sem = sems.find((s) => s.SEMESTER === state.sem);
     const due = Math.max(0, total(sem) + balance); // negative balance = credit, so adding it reduces what's owed
     result.append(
-      select(sems.map((s) => [s.SEMESTER, `Semester ${s.SEMESTER} · ${s.DUE_DATE}`]), state.sem, (v) => { state.sem = v; save(); }),
+      field("Semester",
+        choice("chips", sems.map((s) => [s.SEMESTER, s.SEMESTER]), state.sem, (v) => { state.sem = v; save(); }),
+        el("div", { className: "hint", textContent: sem.DUE_DATE })),
       el("div", { className: "lines" },
         ...LINES.filter(([, k]) => num(sem, k) > 0).map(([label, k]) => row(label, money(num(sem, k)))),
         row("Semester total", money(total(sem)), "sum"),
