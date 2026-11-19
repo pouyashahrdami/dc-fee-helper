@@ -3,13 +3,45 @@
   "name": "DC Fee Helper",
   "version": "0.1.0",
   "description": "Shows your Durham College semester fee estimate next to your account balance.",
-  "permissions": ["storage"],
-  "host_permissions": ["https://durhamcollege.ca/wp-json/dc/v2/programs/fees/*"],
-  "background": { "service_worker": "background.js" },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://durhamcollege.ca/wp-json/dc/v2/programs/fees/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
-      "matches": ["https://ssp.mycampus.ca/StudentSelfService/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://ssp.mycampus.ca/StudentSelfService/*"
+      ],
+      "js": [
+        "content.js"
+      ]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/icon48.png"
+      ],
+      "matches": [
+        "https://ssp.mycampus.ca/*"
+      ]
     }
   ]
 }

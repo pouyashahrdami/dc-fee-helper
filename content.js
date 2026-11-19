@@ -29,8 +29,10 @@ const CSS = `
 .card { position: fixed; top: 72px; right: 20px; z-index: 2147483647; width: 320px;
   font: 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; color: #1c2b25;
   background: #fff; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,40,28,.22), 0 0 0 1px rgba(0,87,63,.12); overflow: hidden; }
-.head { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px;
+.head { display: flex; align-items: center; gap: 8px; cursor: grab; user-select: none; touch-action: none; padding: 10px 14px;
   background: linear-gradient(135deg, #00573f, #0a7a58); color: #fff; font-weight: 600; letter-spacing: .2px; }
+.head img { width: 22px; height: 22px; border-radius: 6px; }
+.head span { flex: 1; }
 .head button { all: unset; cursor: pointer; width: 22px; height: 22px; text-align: center; border-radius: 6px; font-size: 16px; line-height: 22px; }
 .head button:hover { background: rgba(255,255,255,.2); }
 .body { padding: 14px; }
@@ -67,7 +69,7 @@ function select(options, value, onchange) {
 const row = (label, value, cls = "") => el("div", { className: "line " + cls }, el("span", { textContent: label }), el("span", { textContent: value }));
 
 async function mount(balance) {
-  const state = await chrome.storage.local.get({ program: "", residence: "domestic", start: "fall", sem: "", min: false });
+  const state = await chrome.storage.local.get({ program: "", residence: "domestic", start: "fall", sem: "", min: false, x: null, y: null });
   const host = el("div");
   const root = host.attachShadow({ mode: "open" });
   const card = el("div", { className: "card" });
@@ -76,13 +78,37 @@ async function mount(balance) {
   const result = el("div");
   card.classList.toggle("min", state.min);
   collapse.textContent = state.min ? "+" : "–";
+  const head = el("div", { className: "head" }, el("img", { src: chrome.runtime.getURL("icons/icon48.png"), alt: "" }), el("span", { textContent: "DC Fee Helper" }), collapse);
   card.append(
-    el("div", { className: "head" }, el("span", { textContent: "DC Fee Helper" }), collapse),
+    head,
     el("div", { className: "body" }, controls, result),
     el("div", { className: "foot", textContent: "Unofficial. Estimates only: your account is always correct." })
   );
   root.append(el("style", { textContent: CSS }), card);
   document.body.append(host);
+
+  // Drag by the header; keep the card inside the viewport and remember where it was left.
+  const place = (x, y) => {
+    state.x = Math.min(Math.max(0, x), window.innerWidth - card.offsetWidth);
+    state.y = Math.min(Math.max(0, y), window.innerHeight - head.offsetHeight);
+    Object.assign(card.style, { left: state.x + "px", top: state.y + "px", right: "auto" });
+  };
+  if (state.x !== null) place(state.x, state.y);
+  head.addEventListener("pointerdown", (e) => {
+    if (e.target === collapse) return;
+    const dx = e.clientX - card.offsetLeft, dy = e.clientY - card.offsetTop;
+    head.setPointerCapture(e.pointerId);
+    head.style.cursor = "grabbing";
+    const move = (m) => place(m.clientX - dx, m.clientY - dy);
+    const up = () => {
+      head.removeEventListener("pointermove", move);
+      head.removeEventListener("pointerup", up);
+      head.style.cursor = "";
+      chrome.storage.local.set({ x: state.x, y: state.y });
+    };
+    head.addEventListener("pointermove", move);
+    head.addEventListener("pointerup", up);
+  });
 
   const programs = Object.entries(await api("programs")).sort((a, b) => a[1].localeCompare(b[1]));
   const save = () => { chrome.storage.local.set(state); render(); };
