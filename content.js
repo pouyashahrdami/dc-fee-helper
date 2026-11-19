@@ -38,7 +38,7 @@ const CSS = `
 .head button { all: unset; cursor: pointer; width: 22px; height: 22px; text-align: center; border-radius: 6px; font-size: 16px; line-height: 22px; }
 .head button:hover { background: rgba(255,255,255,.2); }
 .body { padding: 14px; }
-.card.min .body { display: none; }
+.card.min .body, .card.min .foot { display: none; }
 .field { margin-bottom: 12px; }
 .label { display: block; margin: 0 0 5px 2px; color: #6b7d75; font-size: 10.5px; font-weight: 600; letter-spacing: .7px; text-transform: uppercase; }
 .seg { display: flex; padding: 3px; gap: 2px; background: var(--track); border-radius: 10px; }
