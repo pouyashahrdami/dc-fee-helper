@@ -69,6 +69,9 @@ const CSS = `
 .due strong { display: block; font-size: 26px; color: #00573f; margin-top: 2px; }
 .due.paid strong { color: #0a7a58; }
 .msg { color: #8a4b00; }
+.link { display: block; margin-top: 10px; text-align: center; color: #00573f; font-weight: 600; text-decoration: none; padding: 8px; border-radius: 8px; border: 1px solid #d5e5dd; transition: background .12s; }
+.link:hover { background: #eef6f2; }
+.link:focus-visible { outline: 2px solid #0a7a58; outline-offset: 1px; }
 .foot { padding: 0 14px 12px; color: #8a9a93; font-size: 10.5px; }
 `;
 
@@ -232,7 +235,10 @@ async function mount(initial) {
       el("div", { className: "due" + (due === 0 ? " paid" : "") },
         el("small", { textContent: due === 0 ? "Covered by your credit" : "Still to pay" }),
         el("strong", { textContent: money(due) })
-      )
+      ),
+      // Estimator deep link; last segment is the semester number, 0 = overview ("5i"-style labels fall back to overview).
+      el("a", { className: "link", target: "_blank", rel: "noopener", textContent: "Open in official estimator ↗",
+        href: `https://durhamcollege.ca/program-fee-estimator/program/${state.program}/${state.residence}/${state.start}/${/^\d+$/.test(sem.SEMESTER) ? sem.SEMESTER : 0}` })
     );
   }
   render();
